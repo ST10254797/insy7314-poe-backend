@@ -11,6 +11,12 @@ const options = {
     cert: fs.readFileSync('ssl/cert.pem')
 };
 
-https.createServer(options, app).listen(PORT, () => {
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log('Connected to MongoDB');
+  https.createServer(options, app).listen(PORT, () => {
   console.log('Server running at https://localhost:' + PORT);
+  })
+})
+.catch((err) => {
+  console.error('Failed to connect to MongoDB', err);
 });
