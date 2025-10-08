@@ -1,20 +1,27 @@
 const express = require('express');
-const cors = require('cors'); // this will be discussed later
-const helmet = require('helmet'); // this will be discussed later
-const dotenv = require('dotenv');
-const authRoutes = require('./Routes/authRoute');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
-dotenv.config();
+const authRoutes = require('./Routes/authRoute');
+const paymentRoutes = require('./Routes/paymentRoutes'); 
 
 const app = express();
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use('/api/auth', authRoutes);
 
-app.get('/', (req, res) => {
-res.send('PulseVote API running!');
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests, try again later."
 });
+app.use(limiter);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/payments', paymentRoutes);
+
+app.get('/', (req, res) => res.send('PulseVote API running!'));
 
 module.exports = app;
