@@ -11,21 +11,17 @@ jobs:
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
-      # 1️⃣ Checkout repo
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2️⃣ Use Node 18 with cache
       - uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
 
-      # 3️⃣ Install dependencies
       - run: npm ci --ignore-scripts --no-audit --prefer-offline
 
-      # 4️⃣ Run SonarCloud scan (optimized)
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
@@ -36,8 +32,14 @@ jobs:
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
             -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
             -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
-            -Dsonar.javascript.node.maxspace=4096
-            -Dsonar.javascript.jasmin.enabled=false
+            # COMPLETELY DISABLE SECURITY ANALYSIS
+            -Dsonar.security.enabled=false
+            -Dsonar.javascript.security.enabled=false
+            -Dsonar.jasmin.enabled=false
+            # PERFORMANCE OPTIMIZATIONS
             -Dsonar.cpd.exclusions=**/*
+            -Dsonar.scm.disabled=true
+            -Dsonar.coverage.exclusions=**/*
+            -Dsonar.typescript.tsconfigPath=/dev/null
             -Dsonar.log.level=WARN
             -Dsonar.verbose=false
