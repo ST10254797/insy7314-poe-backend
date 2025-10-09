@@ -19,6 +19,9 @@ jobs:
           node-version: 18
 
       - run: npm ci --ignore-scripts --no-audit
+      
+      # ADD THIS STEP: Run tests with coverage
+      - run: npm test -- --coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
@@ -28,8 +31,9 @@ jobs:
           args: >
             -Dsonar.organization=st10254797
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.sources=app.js,server.js
-            -Dsonar.exclusions=node_modules/**,**/*.spec.js,**/*.test.js,.github/**,coverage/**,dist/**,build/**
-            -Dsonar.cpd.exclusions=**/*
+            -Dsonar.sources=.
+            -Dsonar.tests=__tests__
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/node_modules/**,**/*.test.js,**/*.spec.js
             -Dsonar.scm.disabled=true
-            -Dsonar.qualitygate.wait=false
+            -Dsonar.qualitygate.wait=true
