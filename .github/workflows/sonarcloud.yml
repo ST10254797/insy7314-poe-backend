@@ -13,27 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout your code
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1  # Only fetch latest commit
+          fetch-depth: 1
 
-      - name: Cache Node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
+      # 2️⃣ Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # 4️⃣ Run SonarCloud scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
@@ -42,7 +38,7 @@ jobs:
           args: >
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
             -Dsonar.organization=st10254797
-            -Dsonar.sources=.
+            -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
             -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
             -Dsonar.javascript.security.enabled=false
             -Dsonar.javascript.file.suspiciousCode=false
