@@ -10,6 +10,7 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,22 +23,7 @@ jobs:
 
       - run: npm ci --ignore-scripts --no-audit --prefer-offline
 
-      - name: SonarCloud Scan
+      - name: SonarCloud Scan (Auto-detect)
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=st10254797
-            -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
-            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
-            -Dsonar.security.enabled=false
-            -Dsonar.javascript.security.enabled=false
-            -Dsonar.jasmin.enabled=false
-            -Dsonar.cpd.exclusions=**/*
-            -Dsonar.scm.disabled=true
-            -Dsonar.coverage.exclusions=**/*
-            -Dsonar.typescript.tsconfigPath=/dev/null
-            -Dsonar.log.level=WARN
-            -Dsonar.verbose=false
