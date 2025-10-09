@@ -11,22 +11,31 @@ jobs:
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout repo (shallow clone)
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0  # Full history for better analysis
 
       # 2️⃣ Use Node 18
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'  # ✅ Enable npm caching
 
-      # 3️⃣ Install dependencies (quietly)
-      - run: npm ci --ignore-scripts --no-audit
+      # 3️⃣ Install dependencies with cache
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-      # 4️⃣ Run SonarCloud scan (pure JS mode)
-      - name: SonarCloud Scan (JavaScript only)
-        uses: SonarSource/sonarcloud-github-action@v2
+      - run: npm ci --ignore-scripts --no-audit --prefer-offline
+
+      # 4️⃣ Run SonarCloud scan (optimized)
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
@@ -34,17 +43,10 @@ jobs:
             -Dsonar.organization=st10254797
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
             -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
-            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
-            -Dsonar.inclusions=**/*.js
-            -Dsonar.language=js
-            -Dsonar.javascript.node.analysis-strategy=skip
-            -Dsonar.security.mode=disabled
-            -Dsonar.security.enabled=false
-            -Dsonar.javascript.security.mode=disabled
-            -Dsonar.javascript.security.enabled=false
-            -Dsonar.javascript.jasmin.skip=true
-            -Dsonar.scanner.skipJreProvisioning=true
-            -Dsonar.cfamily.cache.enabled=false
-            -Dsonar.cfamily.build-wrapper-output.bypass=true
-            -Dsonar.log.level=INFO
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**,**/coverage/**
+            -Dsonar.coverage.exclusions=**/*
+            -Dsonar.cpd.exclusions=**/*
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.scanner.metadataFilePath=./sonar-report.txt
+            -Dsonar.analysis.mode=preview
             -Dsonar.verbose=false
