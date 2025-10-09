@@ -23,7 +23,11 @@ jobs:
 
       - run: npm ci --ignore-scripts --no-audit --prefer-offline
 
-      - name: SonarCloud Scan (Auto-detect)
+      - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=st10254797
+            -Dsonar.projectKey=ST10254797_insy7314-poe-backend
