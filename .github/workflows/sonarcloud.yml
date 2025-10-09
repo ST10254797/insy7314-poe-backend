@@ -20,8 +20,8 @@ jobs:
 
       - run: npm ci --ignore-scripts --no-audit
       
-      # ADD THIS STEP: Run tests with coverage
-      - run: npm test -- --coverage
+      # SIMPLER: Use npx directly instead of modifying package.json
+      - run: npx jest --coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
