@@ -30,6 +30,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_OPTS: "-Xmx2048m"
         with:
           args: >
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
