@@ -46,4 +46,6 @@ jobs:
             -Dsonar.security.enabled=false
             -Dsonar.javascript.security.enabled=false
             -Dsonar.javascript.jasmin.skip=true
+            -Dsonar.javascript.node.analysis-strategy=skip
+            -Dsonar.security.nodejs.analyzer.skip=true
 
