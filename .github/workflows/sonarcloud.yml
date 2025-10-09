@@ -24,28 +24,27 @@ jobs:
       # 3️⃣ Install dependencies (quietly)
       - run: npm ci --ignore-scripts --no-audit
 
-    # 4️⃣ Run SonarCloud scan (pure JS mode)
+      # 4️⃣ Run SonarCloud scan (pure JS mode)
       - name: SonarCloud Scan (JavaScript only)
-  uses: SonarSource/sonarqube-scan-action@v6
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  with:
-    args: >
-      -Dsonar.organization=st10254797
-      -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-      -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
-      -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
-      -Dsonar.inclusions=**/*.js
-      -Dsonar.language=js
-      -Dsonar.javascript.node.analysis-strategy=skip
-      -Dsonar.security.mode=disabled
-      -Dsonar.security.enabled=false
-      -Dsonar.javascript.security.mode=disabled
-      -Dsonar.javascript.security.enabled=false
-      -Dsonar.javascript.jasmin.skip=true
-      -Dsonar.scanner.skipJreProvisioning=true
-      -Dsonar.cfamily.cache.enabled=false
-      -Dsonar.cfamily.build-wrapper-output.bypass=true
-      -Dsonar.log.level=INFO
-      -Dsonar.verbose=false
-
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=st10254797
+            -Dsonar.projectKey=ST10254797_insy7314-poe-backend
+            -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
+            -Dsonar.inclusions=**/*.js
+            -Dsonar.language=js
+            -Dsonar.javascript.node.analysis-strategy=skip
+            -Dsonar.security.mode=disabled
+            -Dsonar.security.enabled=false
+            -Dsonar.javascript.security.mode=disabled
+            -Dsonar.javascript.security.enabled=false
+            -Dsonar.javascript.jasmin.skip=true
+            -Dsonar.scanner.skipJreProvisioning=true
+            -Dsonar.cfamily.cache.enabled=false
+            -Dsonar.cfamily.build-wrapper-output.bypass=true
+            -Dsonar.log.level=INFO
+            -Dsonar.verbose=false
