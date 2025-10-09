@@ -20,7 +20,7 @@ jobs:
 
       - run: npm ci --ignore-scripts --no-audit
 
-      - name: SonarCloud Scan (Fixed)
+      - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -32,3 +32,4 @@ jobs:
             -Dsonar.exclusions=node_modules/**,**/*.spec.js,**/*.test.js,.github/**,coverage/**,dist/**,build/**
             -Dsonar.cpd.exclusions=**/*
             -Dsonar.scm.disabled=true
+            -Dsonar.qualitygate.wait=false
