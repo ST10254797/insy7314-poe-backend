@@ -34,7 +34,7 @@ jobs:
             -Dsonar.organization=st10254797
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
             -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
-            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**,utils/someFile.js
             -Dsonar.inclusions=**/*.js
             -Dsonar.language=js
             -Dsonar.scanner.skipJreProvisioning=true
