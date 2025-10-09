@@ -45,3 +45,5 @@ jobs:
             -Dsonar.verbose=false
             -Dsonar.security.enabled=false
             -Dsonar.javascript.security.enabled=false
+            -Dsonar.javascript.jasmin.skip=true
+
