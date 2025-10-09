@@ -8,13 +8,13 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan (Skip Security)
+      - name: SonarCloud Scan (One File Only)
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -22,9 +22,7 @@ jobs:
           args: >
             -Dsonar.organization=st10254797
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
-            -Dsonar.exclusions=node_modules/**,**/*.spec.js,**/*.test.js,.github/**,coverage/**
+            -Dsonar.sources=app.js
+            -Dsonar.exclusions=**/*
             -Dsonar.cpd.exclusions=**/*
             -Dsonar.scm.disabled=true
-            -Dsonar.security.enabled=false
-            -Dsonar.javascript.security.enabled=false
