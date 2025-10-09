@@ -35,12 +35,12 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-args: >
-  -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-  -Dsonar.organization=st10254797
-  -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
-  -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
-  -Dsonar.inclusions=**/*.js
-  -Dsonar.language=js
-  -Dsonar.javascript.security.enabled=false
-  -Dsonar.javascript.file.suspiciousCode=false
+          args: >
+            -Dsonar.projectKey=ST10254797_insy7314-poe-backend
+            -Dsonar.organization=st10254797
+            -Dsonar.sources=Controllers,Middleware,Models,Routes,utils,app.js,server.js
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
+            -Dsonar.inclusions=**/*.js
+            -Dsonar.language=js
+            -Dsonar.javascript.security.enabled=false
+            -Dsonar.javascript.file.suspiciousCode=false
