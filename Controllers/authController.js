@@ -1,7 +1,7 @@
 const User = require('../Models/userModel');
 const generateToken = require('../utils/generateToken');
 
-// Register a new user
+// Register a new users
 exports.registerUser = async (req, res) => {
     try {
         const { fullName, IDNumber, AccNumber, userName, password } = req.body;
