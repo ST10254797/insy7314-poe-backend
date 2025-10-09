@@ -13,27 +13,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your code
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0  # full history helps Sonar detect changes
 
-      # 2️⃣ Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # 3️⃣ Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # faster and more deterministic than npm install
 
-      # 4️⃣ Run SonarCloud scan
-      - name: SonarCloud Scan
+      - name: Show debug info
+        run: |
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+          echo "Java version:"
+          java -version
+          echo "Disk usage:"
+          df -h
+          echo "Memory info:"
+          free -h
+
+      - name: Run SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_OPTS: "-Xmx4096m -Xms1024m -Dsonar.verbose=true"
         with:
           args: >
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
