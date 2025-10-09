@@ -27,4 +27,3 @@ jobs:
             -Dsonar.coverage.exclusions=**/*
             -Dsonar.cpd.exclusions=**/*
             -Dsonar.scm.disabled=true
-            -Dsonar.analysis.mode=preview
