@@ -20,22 +20,18 @@ jobs:
 
       - run: npm ci --ignore-scripts --no-audit
       
-      # Run tests with coverage
       - run: npx jest --coverage --coverageReporters=lcov
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.2.0
+        uses: SonarSource/sonarcloud-github-action@2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.organization=st10254797
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.sources=app.js,server.js,Models,Middleware,Controllers,Routes,utils
-            -Dsonar.tests=__tests__
+            -Dsonar.sources=.
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.coverage.exclusions=**/node_modules/**,**/*.test.js,**/*.spec.js
-            -Dsonar.exclusions=**/node_modules/**,**/*.md,.github/**,coverage/**,dist/**,build/**
-            -Dsonar.cpd.exclusions=**/*
+            -Dsonar.exclusions=**/node_modules/**,**/__tests__/**,**/*.test.js,**/*.spec.js,.github/**,coverage/lcov-report/**
             -Dsonar.scm.disabled=true
             -Dsonar.qualitygate.wait=true
