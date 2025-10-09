@@ -23,7 +23,7 @@ jobs:
       - run: npx jest --coverage --coverageReporters=lcov
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@2.2.0  # FIXED: lowercase 's'
+        uses: sonarsource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
