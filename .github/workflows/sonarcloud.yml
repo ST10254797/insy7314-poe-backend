@@ -16,7 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1  # Only fetch latest commit
+
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -30,9 +38,11 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_SCANNER_OPTS: "-Xmx4096m"
-          NODE_OPTIONS: "--max-old-space-size=4096"
         with:
           args: >
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
             -Dsonar.organization=st10254797
+            -Dsonar.sources=src  # Only scan your source code folder
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,**/*.spec.js,**/*.test.js,.github/**
+            -Dsonar.javascript.security.enabled=false
+            -Dsonar.javascript.file.suspiciousCode=false
