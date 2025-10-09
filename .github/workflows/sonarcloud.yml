@@ -20,7 +20,7 @@ jobs:
 
       - run: npm ci --ignore-scripts --no-audit
       
-      # SIMPLER: Use npx directly instead of modifying package.json
+      # Run tests with coverage
       - run: npx jest --coverage
 
       - name: SonarCloud Scan
@@ -31,7 +31,7 @@ jobs:
           args: >
             -Dsonar.organization=st10254797
             -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.sources=.
+            -Dsonar.sources=app.js,server.js,Models,Middleware,Controllers,Routes,utils
             -Dsonar.tests=__tests__
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/node_modules/**,**/*.test.js,**/*.spec.js
