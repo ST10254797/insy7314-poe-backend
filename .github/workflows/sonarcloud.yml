@@ -30,11 +30,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Run unit tests with coverage
+      # 4️⃣ Run tests with coverage
       - name: Run tests with coverage
         run: npm test
 
-      # 5️⃣ SonarCloud Scan (Verbose + Log Capture)
+      # 5️⃣ Install Sonar Scanner CLI
+      - name: Install SonarScanner
+        run: |
+          npm install -g sonar-scanner
+          sonar-scanner --version
+
+      # 6️⃣ SonarCloud Scan (Verbose + Log Capture)
       - name: SonarCloud Scan (Verbose Logging)
         run: |
           echo "Starting SonarCloud scan in verbose mode..."
@@ -46,16 +52,16 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_VERBOSE: true
-          SONAR_SCANNER_OPTS: "-Xmx512m"   # Increase memory limit for safety
+          SONAR_SCANNER_OPTS: "-Xmx512m"   # Memory bump
 
-      # 6️⃣ Upload full scan logs for debugging (updated to v4)
+      # 7️⃣ Upload full scan logs (GitHub Artifact v4)
       - name: Upload SonarCloud Logs
-        if: always()  # upload even if the scan fails
-        uses: actions/upload-artifact@v4   # ✅ updated to v4
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: sonarcloud-debug-logs
           path: sonar.log
 
-      # 7️⃣ Confirmation step
+      # 8️⃣ Confirmation step
       - name: Finish Job
         run: echo "✅ SonarCloud analysis completed (or logs uploaded if it failed)."
