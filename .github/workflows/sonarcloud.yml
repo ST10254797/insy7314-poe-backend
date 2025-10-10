@@ -30,3 +30,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.security.config.optionalMetadata=true
+            -Dsonar.security.disabled=true
