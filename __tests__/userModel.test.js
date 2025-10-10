@@ -1,61 +1,64 @@
-require('dotenv').config();  // loads your .env
-const mongoose = require('mongoose');
+const mockingoose = require('mockingoose');
 const User = require('../Models/userModel');
+const bcrypt = require('bcrypt');
 
-jest.setTimeout(30000); // increase timeout for async DB operations
+describe("User model (mocked)", () => {
 
-describe("User model", () => {
-  beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URI);
+  beforeEach(() => {
+    mockingoose.resetAll();
   });
 
-  afterEach(async () => {
-    await User.deleteMany({});
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
-
-  it("should create a User instance", () => {
-    const user = new User({
+  it("should create a User instance", async () => {
+    const mockUser = {
       fullName: "Test User",
       IDNumber: "1234567890123",
       AccNumber: 123456,
       userName: "testuser",
       password: "password123"
-    });
+    };
 
-    expect(user.fullName).toBe("Test User");
-    expect(user.IDNumber).toBe("1234567890123");
-    expect(user.AccNumber).toBe(123456);
-    expect(user.userName).toBe("testuser");
+    mockingoose(User).toReturn(mockUser, 'save');
+
+    const user = new User(mockUser);
+    const savedUser = await user.save();
+
+    expect(savedUser.fullName).toBe("Test User");
+    expect(savedUser.IDNumber).toBe("1234567890123");
+    expect(savedUser.AccNumber).toBe(123456);
+    expect(savedUser.userName).toBe("testuser");
   });
 
   it("should hash password before save", async () => {
-    const user = new User({
-      fullName: "Hash Test",
-      IDNumber: "9876543210987",
-      AccNumber: 654321,
-      userName: "hashtest",
-      password: "mypassword"
-    });
+    const mockUser = { password: "mypassword" };
+    
+    // Simulate pre-save hook hashing
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(mockUser.password, salt);
+    mockingoose(User).toReturn({ password: hashedPassword }, 'save');
 
-    await user.save(); // triggers pre-save hook
-    expect(user.password).not.toBe("mypassword"); // should be hashed
+    const user = new User(mockUser);
+    await user.save();
+
+    expect(user.password).not.toBe("mypassword");
   });
 
   it("should compare password correctly", async () => {
-    const user = new User({
+    const password = "mypassword";
+    const hashed = await bcrypt.hash(password, 10);
+
+    const mockUser = {
       fullName: "Compare Test",
       IDNumber: "1112223334445",
       AccNumber: 111222,
       userName: "comparetest",
-      password: "mypassword"
-    });
+      password: hashed
+    };
 
-    await user.save();
+    mockingoose(User).toReturn(mockUser, 'findOne');
+
+    const user = await User.findOne({ userName: "comparetest" });
     const match = await user.comparePassword("mypassword");
+
     expect(match).toBe(true);
   });
 });
