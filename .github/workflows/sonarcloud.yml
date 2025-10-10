@@ -14,15 +14,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan (One File Only)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test
+
+      - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=st10254797
-            -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.sources=app.js
-            -Dsonar.exclusions=**/*
-            -Dsonar.cpd.exclusions=**/*
-            -Dsonar.scm.disabled=true
