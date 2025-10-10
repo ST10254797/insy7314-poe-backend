@@ -1,14 +1,16 @@
-name: SonarCloud Scan
+name: Backend SonarCloud Scan
 
 on:
   push:
     branches:
       - master
+    paths:
+      - '**'  # Monitor all files
 
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 8  # Shorter timeout
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,12 +28,7 @@ jobs:
       - name: Run tests with coverage
         run: npm test
 
-      - name: SonarCloud Scan (Fast Mode)
+      - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.scm.disabled=true
-            -Dsonar.coverage.exclusions=**/*
-            -Dsonar.cpd.exclusions=**/*
