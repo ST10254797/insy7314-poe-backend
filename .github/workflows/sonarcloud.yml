@@ -27,7 +27,7 @@ jobs:
         run: npm test -- --coverage --coverageReporters=lcov --coverageReporters=text-summary
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6  # ← USE THIS ONE
+        uses: SonarSource/sonarqube-scan-action@v6  # ← SAME AS FRONTEND
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
