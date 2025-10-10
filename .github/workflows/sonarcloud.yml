@@ -8,7 +8,7 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,10 +27,19 @@ jobs:
         run: npm test
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.2.0
+        run: |
+          npx sonar-scanner \
+            -Dsonar.organization=st10254797 \
+            -Dsonar.projectKey=ST10254797_insy7314-poe-backend \
+            -Dsonar.sources=. \
+            -Dsonar.exclusions=node_modules/**,coverage/**,__tests__/** \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.tests=__tests__ \
+            -Dsonar.coverage.exclusions=**/* \
+            -Dsonar.cpd.exclusions=**/* \
+            -Dsonar.cfamily.build-wrapper-content.ignore=true \
+            -Dsonar.cfamily.gcov.ignore=true \
+            -Dsonar.scm.disabled=true \
+            -Dsonar.scm.provider=git
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.security.config.optionalMetadata=true
-            -Dsonar.security.disabled=true
