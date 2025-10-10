@@ -10,7 +10,7 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       # 1️⃣ Checkout source code
@@ -46,10 +46,9 @@ jobs:
           echo "NODE_OPTIONS=--max-old-space-size=2048" >> $GITHUB_ENV
           echo "SONAR_SCANNER_OPTS=-Xmx1024m" >> $GITHUB_ENV
 
-      # 7️⃣ SonarCloud Scan (Verbose + Log Capture)
-      - name: SonarCloud Scan (Verbose Logging)
+      # 7️⃣ SonarCloud Scan (Verbose Logging)
+      - name: SonarCloud Scan
         run: |
-          echo "Starting SonarCloud scan in verbose mode..."
           sonar-scanner \
             -Dsonar.verbose=true \
             -Dsonar.projectBaseDir=. \
@@ -58,7 +57,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # 8️⃣ Upload full scan logs (GitHub Artifact v4)
+      # 8️⃣ Upload full scan logs
       - name: Upload SonarCloud Logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -67,6 +66,6 @@ jobs:
           path: sonar.log
           retention-days: 7
 
-      # 9️⃣ Confirmation step
+      # 9️⃣ Finish step
       - name: Finish Job
         run: echo "✅ SonarCloud analysis completed (or logs uploaded if it failed)."
