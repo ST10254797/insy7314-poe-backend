@@ -2,13 +2,15 @@ name: Backend SonarCloud Scan
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+    paths:
+      - '**'  # Monitor all files
 
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,15 +26,9 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: npm test -- --coverage --coverageReporters=lcov --coverageReporters=text-summary
+        run: npm test
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6  # ← SAME AS FRONTEND
+        uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=ST10254797_insy7314-poe-backend
-            -Dsonar.organization=st10254797
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.scm.disabled=true
