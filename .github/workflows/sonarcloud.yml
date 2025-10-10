@@ -5,30 +5,57 @@ on:
     branches:
       - master
     paths:
-      - '**'  # Monitor all files
+      - '**'
 
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2️⃣ Setup Node.js (v18)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
 
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 4️⃣ Run unit tests with coverage
       - name: Run tests with coverage
         run: npm test
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.2.0
+      # 5️⃣ SonarCloud Scan (Verbose + Log Capture)
+      - name: SonarCloud Scan (Verbose Logging)
+        run: |
+          echo "Starting SonarCloud scan in verbose mode..."
+          sonar-scanner \
+            -Dsonar.verbose=true \
+            -Dsonar.projectBaseDir=. \
+            -Dsonar.scanner.forceAnalysis=true \
+            | tee sonar.log
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_VERBOSE: true
+          SONAR_SCANNER_OPTS: "-Xmx512m"   # Increase memory limit for safety
+
+      # 6️⃣ Upload full scan logs for debugging if it hangs or fails
+      - name: Upload SonarCloud Logs
+        if: always()  # upload even if the scan fails
+        uses: actions/upload-artifact@v3
+        with:
+          name: sonarcloud-debug-logs
+          path: sonar.log
+
+      # 7️⃣ Confirmation step
+      - name: Finish Job
+        run: echo "✅ SonarCloud analysis completed (or logs uploaded if it failed)."
