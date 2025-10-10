@@ -48,10 +48,10 @@ jobs:
           SONAR_VERBOSE: true
           SONAR_SCANNER_OPTS: "-Xmx512m"   # Increase memory limit for safety
 
-      # 6️⃣ Upload full scan logs for debugging if it hangs or fails
+      # 6️⃣ Upload full scan logs for debugging (updated to v4)
       - name: Upload SonarCloud Logs
         if: always()  # upload even if the scan fails
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4   # ✅ updated to v4
         with:
           name: sonarcloud-debug-logs
           path: sonar.log
