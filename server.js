@@ -13,37 +13,41 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 app.use(
   helmet.hsts({
-    maxAge: 31536000, // 1 year
+    maxAge: 31536000,
     includeSubDomains: true,
     preload: true
   })
 );
 
-// --- Global Rate Limiter (all endpoints) ---
+// --- Global Rate Limiter ---
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: "Too many requests from this IP, please try again later."
 });
 app.use(globalLimiter);
 
-// --- HTTPS options ---
-const options = {
-  key: fs.readFileSync('ssl/key.pem'),
-  cert: fs.readFileSync('ssl/cert.pem')
-};
-
-// --- Connect to MongoDB and start HTTPS server ---
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
-    https.createServer(options, app).listen(PORT, () => {
-      console.log('✅ Server running at https://localhost:' + PORT);
-    });
+// --- Only start server if NOT in test ---
+if (process.env.NODE_ENV !== 'test') {
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   })
-  .catch((err) => {
-    console.error('❌ Failed to connect to MongoDB', err);
-  });
+    .then(() => {
+      console.log('✅ Connected to MongoDB');
+
+      // HTTPS only in dev/production
+      const options = {
+        key: fs.readFileSync('ssl/key.pem'),
+        cert: fs.readFileSync('ssl/cert.pem')
+      };
+      https.createServer(options, app).listen(PORT, () => {
+        console.log(`✅ Server running at https://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('❌ Failed to connect to MongoDB', err);
+    });
+}
+
+module.exports = app; // export app for tests

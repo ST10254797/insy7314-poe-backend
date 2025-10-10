@@ -1,11 +1,7 @@
-// __tests__/server.test.js
-const https = require("https");
-const fs = require("fs");
-const app = require("../server"); // adjust path if needed
+const app = require("../server");
 
 describe("Server startup", () => {
-  it("should attempt to start server (coverage only)", () => {
+  it("should export app for testing", () => {
     expect(app).toBeDefined();
-    // We won't actually start HTTPS server in test
   });
 });
