@@ -17,6 +17,7 @@ describe("User model (mocked)", () => {
       password: "password123"
     };
 
+    // Mock the save operation
     mockingoose(User).toReturn(mockUser, 'save');
 
     const user = new User(mockUser);
@@ -26,20 +27,29 @@ describe("User model (mocked)", () => {
     expect(savedUser.IDNumber).toBe("1234567890123");
     expect(savedUser.AccNumber).toBe(123456);
     expect(savedUser.userName).toBe("testuser");
+    expect(savedUser.password).toBe("password123"); // mock returns original password
   });
 
   it("should hash password before save", async () => {
-    const mockUser = { password: "mypassword" };
-    
+    const mockUser = {
+      fullName: "Hash Test",
+      IDNumber: "9876543210987",
+      AccNumber: 654321,
+      userName: "hashtest",
+      password: "mypassword"
+    };
+
     // Simulate pre-save hook hashing
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(mockUser.password, salt);
-    mockingoose(User).toReturn({ password: hashedPassword }, 'save');
+
+    mockingoose(User).toReturn({ ...mockUser, password: hashedPassword }, 'save');
 
     const user = new User(mockUser);
-    await user.save();
+    const savedUser = await user.save();
 
-    expect(user.password).not.toBe("mypassword");
+    expect(savedUser.password).not.toBe("mypassword");
+    expect(await bcrypt.compare("mypassword", savedUser.password)).toBe(true);
   });
 
   it("should compare password correctly", async () => {
@@ -54,10 +64,11 @@ describe("User model (mocked)", () => {
       password: hashed
     };
 
+    // Mock findOne to return user with hashed password
     mockingoose(User).toReturn(mockUser, 'findOne');
 
     const user = await User.findOne({ userName: "comparetest" });
-    const match = await user.comparePassword("mypassword");
+    const match = await user.comparePassword(password);
 
     expect(match).toBe(true);
   });
