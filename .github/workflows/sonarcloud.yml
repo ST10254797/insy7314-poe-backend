@@ -40,7 +40,13 @@ jobs:
           npm install -g sonar-scanner
           sonar-scanner --version
 
-      # 6️⃣ SonarCloud Scan (Verbose + Log Capture)
+      # 6️⃣ Set memory limits for Node & Java
+      - name: Configure memory
+        run: |
+          echo "NODE_OPTIONS=--max-old-space-size=2048" >> $GITHUB_ENV
+          echo "SONAR_SCANNER_OPTS=-Xmx1024m" >> $GITHUB_ENV
+
+      # 7️⃣ SonarCloud Scan (Verbose + Log Capture)
       - name: SonarCloud Scan (Verbose Logging)
         run: |
           echo "Starting SonarCloud scan in verbose mode..."
@@ -51,17 +57,16 @@ jobs:
             | tee sonar.log
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_VERBOSE: true
-          SONAR_SCANNER_OPTS: "-Xmx512m"   # Memory bump
 
-      # 7️⃣ Upload full scan logs (GitHub Artifact v4)
+      # 8️⃣ Upload full scan logs (GitHub Artifact v4)
       - name: Upload SonarCloud Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sonarcloud-debug-logs
           path: sonar.log
+          retention-days: 7
 
-      # 8️⃣ Confirmation step
+      # 9️⃣ Confirmation step
       - name: Finish Job
         run: echo "✅ SonarCloud analysis completed (or logs uploaded if it failed)."
