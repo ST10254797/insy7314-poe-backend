@@ -12,8 +12,8 @@ app.use(helmet());
 
 // ---- Secure CORS ----
 const allowedOrigins = [
-  'http://localhost:3000',       // dev frontend
-  'http://localhost:5173', 
+  'https://localhost:3000',       // dev frontend
+  'https://localhost:5173', 
   'https://your-production.com'  // production frontend
 ];
 
