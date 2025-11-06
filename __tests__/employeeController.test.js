@@ -100,8 +100,12 @@ describe("employeeLogin", () => {
 // -------------------------
 describe("getPendingTransactions", () => {
 it("should return 200 with transactions", async () => {
-Transaction.find.mockResolvedValue([{ id: 1, status: "Pending" }]);
+  const mockTransactions = [{ id: 1, status: "Pending" }];
 
+  Transaction.find.mockReturnValue({
+    populate: jest.fn().mockReturnThis(),
+    lean: jest.fn().mockResolvedValue(mockTransactions),
+  });
 
   const req = {};
   const res = mockResponse();
@@ -114,9 +118,11 @@ Transaction.find.mockResolvedValue([{ id: 1, status: "Pending" }]);
   );
 });
 
+
 it("should handle database errors", async () => {
-  Transaction.find.mockImplementation(async () => {
-    throw new Error("DB error");
+  Transaction.find.mockReturnValue({
+    populate: jest.fn().mockReturnThis(),
+    lean: jest.fn().mockRejectedValue(new Error("DB error")),
   });
 
   const res = mockResponse();
@@ -127,6 +133,7 @@ it("should handle database errors", async () => {
     expect.objectContaining({ message: "Error fetching transactions" })
   );
 });
+
 
 
 });
