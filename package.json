@@ -11,21 +11,29 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
+    "express-rate-limit": "^8.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.1"
+    "mongoose": "^8.19.3"
   },
   "devDependencies": {
     "jest": "^30.2.0",
     "mockingoose": "^2.16.2",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ST10254797/insy7314-poe-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ST10254797/insy7314-poe-backend/issues"
+  },
+  "homepage": "https://github.com/ST10254797/insy7314-poe-backend#readme",
+  "description": ""
 }

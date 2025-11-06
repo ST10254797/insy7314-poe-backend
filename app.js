@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./Routes/authRoute');
 const paymentRoutes = require('./Routes/paymentRoutes'); 
+const employeeRoutes = require('./Routes/employeeRoutes');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use(limiter);
 // ---- Routes ----
 app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/employee', employeeRoutes);
 
 app.get('/', (req, res) => res.send('PulseVote API running!'));
 
