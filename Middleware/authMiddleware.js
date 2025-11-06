@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../Models/userModel");
+const Employee = require("../Models/employeeModel");
 
 const protect = async (req, res, next) => {
   console.log("Authorization header:", req.headers.authorization);
@@ -11,14 +12,17 @@ const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log("Decoded token:", decoded);
 
-      const user = await User.findById(decoded.id).select("-password");
-      console.log("User found:", user);
+      let currentUser;
 
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
+      if (decoded.role === "employee") {
+        currentUser = await Employee.findById(decoded.id).select("-password");
+        if (!currentUser) return res.status(401).json({ message: "Employee not found" });
+      } else {
+        currentUser = await User.findById(decoded.id).select("-password");
+        if (!currentUser) return res.status(401).json({ message: "User not found" });
       }
 
-      req.user = user;
+      req.user = currentUser;
       next();
     } catch (error) {
       console.error("JWT verification error:", error.message);
