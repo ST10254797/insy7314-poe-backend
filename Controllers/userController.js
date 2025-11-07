@@ -1,10 +1,15 @@
-// controllers/userController.js
+// Controllers/userController.js
 const Transaction = require("../Models/Transaction");
 
 // Get all transactions for the logged-in user
 exports.getUserTransactions = async (req, res) => {
   try {
-    const userId = req.user.id; // Comes from your auth middleware
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    const userId = req.user._id; // Comes from auth middleware
+
     const transactions = await Transaction.find({ sender: userId })
       .populate("sender", "fullName userName")
       .lean();
