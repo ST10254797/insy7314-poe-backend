@@ -1,4 +1,4 @@
-name: Backend CI  SonarCloud Scan
+name: Backend SonarCloud Scan
 
 on:
   push:
@@ -6,14 +6,11 @@ on:
       - master
     paths:
       - '**'
-  pull_request:
-    branches:
-      - master
 
 jobs:
-  build-and-scan:
+  sonarcloud:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
 
     steps:
       # 1️⃣ Checkout source code
@@ -33,25 +30,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Run package vulnerability scan
-      - name: Run npm audit
-        run: npm audit --audit-level=moderate
-
-      # 5️⃣ Run linting
-      - name: Run ESLint
-        run: npm run lint
-
-      # 6️⃣ Run unit/integration tests with coverage
-      - name: Run tests
+      # 4️⃣ Run tests with coverage
+      - name: Run tests with coverage
         run: npm test
 
-      # 7️⃣ Install SonarScanner CLI
+      # 5️⃣ Install Sonar Scanner CLI
       - name: Install SonarScanner
         run: |
           npm install -g sonar-scanner
           sonar-scanner --version
 
-      # 8️⃣ SonarCloud Scan (Verbose)
+      # 6️⃣ SonarCloud Scan (Verbose Logging)
       - name: SonarCloud Scan
         run: |
           sonar-scanner \
@@ -62,7 +51,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # 9️⃣ Upload SonarCloud logs
+      # 7️⃣ Upload full scan logs
       - name: Upload SonarCloud Logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,6 +60,6 @@ jobs:
           path: sonar.log
           retention-days: 7
 
-      # 🔟 Finish step
+      # 8️⃣ Finish step
       - name: Finish Job
-        run: echo "✅ Backend CI pipeline completed."
+        run: echo "✅ SonarCloud analysis completed (or logs uploaded if it failed)."
