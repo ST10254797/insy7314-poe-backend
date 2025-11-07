@@ -12,21 +12,21 @@ protect: (req, res, next) => next(),
 authorize: () => (req, res, next) => next()
 }));
 
-// Mock Employee model inside factory (no external variables!)
+// Mock Employee model
 jest.mock("../Models/employeeModel", () => {
 const mSave = jest.fn();
 const mFindOne = jest.fn();
 const mFind = jest.fn();
 
 class Employee {
-constructor() {
-return { save: mSave };
+constructor(data) {
+Object.assign(this, data);
+this.save = mSave;
 }
 static findOne = mFindOne;
 static find = mFind;
 }
 
-// Export mocks so we can access them in tests
 Employee.__mSave = mSave;
 Employee.__mFindOne = mFindOne;
 Employee.__mFind = mFind;
@@ -64,7 +64,8 @@ const newEmployee = {
 const response = await request(app)  
   .post("/api/manager/add-employee")  
   .send(newEmployee);  
-expect(Employee.__mFindOne).toHaveBeenCalledWith({ email: { $eq: "john@example.com" } });
+
+expect(Employee.__mFindOne).toHaveBeenCalledWith({ email: "john@example.com" });  
 expect(bcrypt.hash).toHaveBeenCalledWith("password123", 12);  
 expect(Employee.__mSave).toHaveBeenCalled();  
 expect(response.status).toBe(201);  
@@ -106,7 +107,9 @@ const mockEmployees = [
 ];
 
 
-Employee.__mFind.mockReturnValue({ select: jest.fn().mockResolvedValue(mockEmployees) });  
+Employee.__mFind.mockImplementation(() => ({  
+  select: jest.fn().mockResolvedValue(mockEmployees)  
+}));  
 
 const response = await request(app).get("/api/manager/all-employees");  
 
@@ -138,7 +141,9 @@ expect(response.body).toHaveProperty("message", "Error adding employee");
 });
 
 test("should return 500 if getAllEmployees throws error", async () => {
-Employee.__mFind.mockImplementation(() => { throw new Error("DB error"); });
+Employee.__mFind.mockImplementation(() => ({
+select: jest.fn().mockRejectedValue(new Error("DB error"))
+}));
 
 
 const response = await request(app).get("/api/manager/all-employees");  

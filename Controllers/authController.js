@@ -64,7 +64,7 @@ exports.loginUser = async (req, res) => {
         }
 
         // Generate tokens
-        const accessToken = generateToken({ id: user._id, role: 'customer' });
+        const accessToken = generateToken({ id: user._id.toString(), role: 'customer' });
         const refreshToken = createRefreshToken();
 
         await addRefreshTokenToUser(user, refreshToken);
@@ -169,7 +169,7 @@ exports.refreshToken = async (req, res) => {
     }
 
     // generate new access token
-    const accessToken = generateToken({ id: user._id, role: 'customer' });
+    const accessToken = generateToken({ id: user._id.toString(), role: 'customer' });
 
     res.status(200).json({ token: accessToken });
   } catch (error) {

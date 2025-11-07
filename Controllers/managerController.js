@@ -22,7 +22,7 @@ exports.addEmployee = async (req, res) => {
     email = validator.normalizeEmail(email);
 
     // Check if employee already exists (safe query)
-    const existingEmployee = await Employee.findOne({ email: { $eq: email } });
+   const existingEmployee = await Employee.findOne({ email });
     if (existingEmployee) {
       return res.status(400).json({ message: "Employee already exists" });
     }

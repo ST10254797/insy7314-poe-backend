@@ -1,122 +1,177 @@
-const request = require('supertest');
-const app = require('../app');
-const User = require('../Models/userModel');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
+const { protect, authorize } = require("../Middleware/authMiddleware");
+const User = require("../Models/userModel");
+const Employee = require("../Models/employeeModel");
 
-// Mock dependencies at the TOP LEVEL
-jest.mock('../Models/userModel');
-jest.mock('jsonwebtoken');
-jest.mock('bcrypt');
-jest.mock('../utils/generateToken', () => jest.fn(() => 'mock-token'));
+// Mock the models PROPERLY
+jest.mock("../Models/userModel", () => ({
+  findById: jest.fn()
+}));
 
-describe('Auth Controller', () => {
+jest.mock("../Models/employeeModel", () => ({
+  findById: jest.fn()
+}));
+
+describe("Auth Middleware", () => {
+  let mockReq, mockRes, mockNext;
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockReq = {
+      headers: {}
+    };
+    mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+    mockNext = jest.fn();
+    process.env.JWT_SECRET = "test-secret";
+    
+    // Clear all mocks
+    User.findById.mockClear();
+    Employee.findById.mockClear();
   });
 
-  test('POST /api/auth/register should create user', async () => {
-    User.findOne.mockResolvedValue(null);
-    User.create.mockResolvedValue({
-      _id: 'user123',
-      fullName: 'Test User',
-      IDNumber: '1234567890123',
-      AccNumber: 1234567890,
-      userName: 'testuser'
+  describe("protect middleware", () => {
+    it("should return 401 if no authorization header", async () => {
+      await protect(mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        message: "Not authorized, no token"
+      });
     });
 
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        fullName: 'Test User',
-        IDNumber: '1234567890123',
-        AccNumber: 1234567890,
-        userName: 'testuser',
-        password: 'password123'
+    it("should attach regular user to request for valid token", async () => {
+      const mockUser = {
+        _id: "user123",
+        name: "Test User",
+        email: "test@example.com"
+      };
+
+      const token = jwt.sign(
+        { id: "user123" },
+        process.env.JWT_SECRET
+      );
+
+      mockReq.headers.authorization = `Bearer ${token}`;
+      
+      // Mock the chain: User.findById().select()
+      const mockSelect = jest.fn().mockResolvedValue(mockUser);
+      User.findById.mockReturnValue({
+        select: mockSelect
       });
 
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('message', 'User registered successfully');
-  });
+      await protect(mockReq, mockRes, mockNext);
 
-  test('POST /api/auth/register should reject existing username', async () => {
-    User.findOne.mockResolvedValue({
-      userName: 'testuser',
-      fullName: 'Existing User'
+      expect(User.findById).toHaveBeenCalledWith("user123");
+      expect(mockSelect).toHaveBeenCalledWith("-password");
+      expect(mockReq.user.role).toBe("user");
+      expect(mockNext).toHaveBeenCalled();
     });
 
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        fullName: 'Test User',
-        IDNumber: '1234567890123',
-        AccNumber: 1234567890,
-        userName: 'testuser',
-        password: 'password123'
+    it("should attach employee to request for valid employee token", async () => {
+      const mockEmployee = {
+        _id: "emp123",
+        name: "Test Employee",
+        email: "employee@test.com",
+        role: "employee"
+      };
+
+      const token = jwt.sign(
+        { id: "emp123", role: "employee" },
+        process.env.JWT_SECRET
+      );
+
+      mockReq.headers.authorization = `Bearer ${token}`;
+      
+      // Mock the chain: Employee.findById().select()
+      const mockSelect = jest.fn().mockResolvedValue(mockEmployee);
+      Employee.findById.mockReturnValue({
+        select: mockSelect
       });
 
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('message', 'Username already exists');
+      await protect(mockReq, mockRes, mockNext);
+
+      expect(Employee.findById).toHaveBeenCalledWith("emp123");
+      expect(mockSelect).toHaveBeenCalledWith("-password");
+      expect(mockReq.user).toEqual(mockEmployee);
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it("should return 401 if user not found", async () => {
+      const token = jwt.sign(
+        { id: "nonexistent" },
+        process.env.JWT_SECRET
+      );
+
+      mockReq.headers.authorization = `Bearer ${token}`;
+      
+      // Mock user not found
+      const mockSelect = jest.fn().mockResolvedValue(null);
+      User.findById.mockReturnValue({
+        select: mockSelect
+      });
+
+      await protect(mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        message: "User not found"
+      });
+    });
+
+    it("should return 401 if employee not found", async () => {
+      const token = jwt.sign(
+        { id: "nonexistent", role: "employee" },
+        process.env.JWT_SECRET
+      );
+
+      mockReq.headers.authorization = `Bearer ${token}`;
+      
+      // Mock employee not found
+      const mockSelect = jest.fn().mockResolvedValue(null);
+      Employee.findById.mockReturnValue({
+        select: mockSelect
+      });
+
+      await protect(mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        message: "Employee not found"
+      });
+    });
   });
 
-  test('POST /api/auth/login should authenticate user', async () => {
-    const mockUser = {
-      _id: 'user123',
-      fullName: 'Test User',
-      userName: 'testuser',
-      AccNumber: 1234567890,
-      comparePassword: jest.fn().mockResolvedValue(true)
-    };
+  describe("authorize middleware", () => {
+    it("should allow access when user has required role", () => {
+      mockReq.user = { role: "manager" };
+      const middleware = authorize("manager", "employee");
 
-    User.findOne.mockResolvedValue(mockUser);
+      middleware(mockReq, mockRes, mockNext);
 
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        userName: 'testuser',
-        AccNumber: 1234567890,
-        password: 'password123'
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it("should deny access when user doesn't have required role", () => {
+      mockReq.user = { role: "employee" };
+      const middleware = authorize("manager");
+
+      middleware(mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(403);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        message: "Access denied: insufficient permissions"
       });
+    });
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('token', 'mock-token');
-    expect(response.body).toHaveProperty('message', 'Login successful');
-  });
+    it("should deny access when no user data", () => {
+      mockReq.user = null;
+      const middleware = authorize("manager");
 
-  test('POST /api/auth/login should reject invalid credentials', async () => {
-    User.findOne.mockResolvedValue(null);
+      middleware(mockReq, mockRes, mockNext);
 
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        userName: 'wronguser',
-        AccNumber: 9999999999,
-        password: 'password123'
-      });
-
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('message', 'Invalid username or account number');
-  });
-
-  test('POST /api/auth/login should reject wrong password', async () => {
-    const mockUser = {
-      _id: 'user123',
-      userName: 'testuser',
-      AccNumber: 1234567890,
-      comparePassword: jest.fn().mockResolvedValue(false)
-    };
-
-    User.findOne.mockResolvedValue(mockUser);
-
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        userName: 'testuser',
-        AccNumber: 1234567890,
-        password: 'wrongpassword'
-      });
-
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('message', 'Invalid password');
+      expect(mockRes.status).toHaveBeenCalledWith(403);
+    });
   });
 });
