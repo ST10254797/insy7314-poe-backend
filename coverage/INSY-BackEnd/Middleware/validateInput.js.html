@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -88,54 +88,54 @@
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
 <a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L26'></a><a href='#L26'>26</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">module.exports = <span class="fstat-no" title="function not covered" >(r</span>eq, res, next) =&gt; {
-    const { fullName, IDNumber, AccNumber, userName, password } = <span class="cstat-no" title="statement not covered" >req.body;</span>
-    const regexName = <span class="cstat-no" title="statement not covered" >/^[a-zA-Z\s]+$/;</span>
-    const regexID = <span class="cstat-no" title="statement not covered" >/^\d{13}$/;</span>
-    const regexAcc = <span class="cstat-no" title="statement not covered" >/^\d{8,12}$/; </span>
-    const regexUser = <span class="cstat-no" title="statement not covered" >/^[a-zA-Z0-9_]{4,20}$/;</span>
-   const regexPass = <span class="cstat-no" title="statement not covered" >/^[A-Za-z0-9!@#$%^&amp;*]{8,12}$/;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">module.exports = (req, res, next) =&gt; {
+    const { fullName, IDNumber, AccNumber, userName, password } = req.body;
+    const regexName = /^[a-zA-Z\s]+$/;
+    const regexID = /^\d{13}$/;
+    const regexAcc = /^\d{8,12}$/; 
+    const regexUser = /^[a-zA-Z0-9_]{4,20}$/;
+   const regexPass = /^[A-Za-z0-9!@#$%^&amp;*]{8,12}$/;
 &nbsp;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (!fullName || !IDNumber || !AccNumber || !userName || !password) {</span>
-<span class="cstat-no" title="statement not covered" >        return res.status(400).json({ message: 'All fields are required' });</span>
+    if (!fullName || !IDNumber || !AccNumber || !userName || !password) {
+        return res.status(400).json({ message: 'All fields are required' });
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (!regexName.test(fullName) || </span>
+    if (!regexName.test(fullName) || 
         !regexID.test(IDNumber) || 
         !regexAcc.test(AccNumber.toString()) || 
         !regexUser.test(userName) || 
         !regexPass.test(password)) 
     {
-<span class="cstat-no" title="statement not covered" >        return res.status(400).json({ message: 'Invalid input format' });</span>
+        return res.status(400).json({ message: 'Invalid input format' });
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    next();</span>
+    next();
 };
 &nbsp;
 &nbsp;</pre></td></tr></table></pre>
@@ -145,7 +145,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-07T15:47:21.939Z
+                at 2025-11-07T16:00:18.745Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
