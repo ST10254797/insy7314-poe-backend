@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for INSY-BackEnd/Middleware/validateInput.js</title>
+    <title>Code coverage report for INSY-BackEnd/Controllers/userController.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">INSY-BackEnd/Middleware</a> validateInput.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">INSY-BackEnd/Controllers</a> userController.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.33% </span>
+                <span class="strong">20% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/12</span>
+                <span class='fraction'>2/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/14</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.33% </span>
+                <span class="strong">20% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/12</span>
+                <span class='fraction'>2/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -85,59 +85,50 @@
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L23'></a><a href='#L23'>23</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">module.exports = (req, res, next) =&gt; {
-    const { fullName, IDNumber, AccNumber, userName, password } = req.body;
-    const regexName = /^[a-zA-Z\s]+$/;
-    const regexID = /^\d{13}$/;
-    const regexAcc = /^\d{8,12}$/; 
-    const regexUser = /^[a-zA-Z0-9_]{4,20}$/;
-   const regexPass = /^[A-Za-z0-9!@#$%^&amp;*]{8,12}$/;
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Controllers/userController.js
+const Transaction = require("../Models/Transaction");
 &nbsp;
-&nbsp;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!fullName || !IDNumber || !AccNumber || !userName || !password) {
-<span class="cstat-no" title="statement not covered" >        return res.status(400).json({ message: 'All fields are required' });</span>
+// Get all transactions for the logged-in user
+exports.getUserTransactions = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    if (!req.user || !req.user._id) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(401).json({ message: "Unauthorized: User not found" });</span>
     }
 &nbsp;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!regexName.test(fullName) || 
-        !regexID.test(IDNumber) || 
-        !regexAcc.test(AccNumber.toString()) || 
-        !regexUser.test(userName) || 
-        !regexPass.test(password)) 
-    {
-<span class="cstat-no" title="statement not covered" >        return res.status(400).json({ message: 'Invalid input format' });</span>
-    }
+    const userId = <span class="cstat-no" title="statement not covered" >req.user._id;</span> // Comes from auth middleware
 &nbsp;
-    next();
+    const transactions = <span class="cstat-no" title="statement not covered" >await Transaction.find({ sender: userId })</span>
+      .populate("sender", "fullName userName")
+      .lean();
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    res.status(200).json(transactions);</span>
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    console.error("Error fetching user transactions:", error.message);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: "Error fetching transactions", error: error.message });</span>
+  }
 };
-&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -145,7 +136,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-07T10:28:21.484Z
+                at 2025-11-07T10:28:21.398Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
