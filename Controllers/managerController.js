@@ -1,19 +1,28 @@
 // controllers/managerController.js
 const Employee = require("../Models/employeeModel");
 const bcrypt = require("bcryptjs");
+const validator = require("validator"); // <-- make sure this is imported
 
-// ✅ Create new employee
+// ✅ Create new employee (secure)
 exports.addEmployee = async (req, res) => {
   try {
-    const { name, employeeId, email, password, role } = req.body;
+    let { name, employeeId, email, password, role } = req.body;
 
     // Basic validation
     if (!name || !employeeId || !email || !password || !role) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if employee already exists
-    const existingEmployee = await Employee.findOne({ email });
+    // Validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Normalize email
+    email = validator.normalizeEmail(email);
+
+    // Check if employee already exists (safe query)
+    const existingEmployee = await Employee.findOne({ email: { $eq: email } });
     if (existingEmployee) {
       return res.status(400).json({ message: "Employee already exists" });
     }

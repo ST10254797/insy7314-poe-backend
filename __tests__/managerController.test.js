@@ -64,8 +64,7 @@ const newEmployee = {
 const response = await request(app)  
   .post("/api/manager/add-employee")  
   .send(newEmployee);  
-
-expect(Employee.__mFindOne).toHaveBeenCalledWith({ email: "john@example.com" });  
+expect(Employee.__mFindOne).toHaveBeenCalledWith({ email: { $eq: "john@example.com" } });
 expect(bcrypt.hash).toHaveBeenCalledWith("password123", 12);  
 expect(Employee.__mSave).toHaveBeenCalled();  
 expect(response.status).toBe(201);  
