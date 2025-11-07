@@ -90,26 +90,28 @@ describe('Payment Routes', () => {
     expect(response.body).toHaveProperty('message', 'Server error');
   });
 
-  test('POST /api/payments should reject invalid token', async () => {
-    // Mock invalid token
-    jwt.verify.mockImplementation(() => {
-      throw new Error('Invalid token');
+ test('POST /api/payments should reject invalid token', async () => {
+  // Mock invalid token
+  jwt.verify.mockImplementation(() => {
+    throw new Error('Invalid token');
+  });
+
+  const response = await request(app)
+    .post('/api/payments')
+    .set('Authorization', 'Bearer invalid-token')
+    .send({
+      amount: 100,
+      currency: 'USD',
+      provider: 'Bank Transfer',
+      recipientAccount: '1234567890',
+      swiftCode: 'ABCDEFGH'
     });
 
-    const response = await request(app)
-      .post('/api/payments')
-      .set('Authorization', 'Bearer invalid-token')
-      .send({
-        amount: 100,
-        currency: 'USD',
-        provider: 'Bank Transfer',
-        recipientAccount: '1234567890',
-        swiftCode: 'ABCDEFGH'
-      });
+  expect(response.status).toBe(401);
+  // <-- Change this line to match your middleware
+  expect(response.body).toHaveProperty('message', 'Not authorized, token invalid');
+});
 
-    expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty('message', 'Not authorized');
-  });
 
   test('POST /api/payments should reject when user not found', async () => {
     // Mock User.findById().select() to return null (user not found)

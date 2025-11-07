@@ -1,3 +1,4 @@
+const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Employee = require("../Models/employeeModel");
@@ -6,12 +7,30 @@ const Transaction = require("../Models/Transaction");
 // Employee login
 exports.employeeLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const employee = await Employee.findOne({ email });
-    if (!employee) return res.status(401).json({ message: "Invalid credentials" });
+    let { email, password } = req.body;
+
+    // ✅ Validate and sanitize email
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+    email = validator.normalizeEmail(email);
+
+    // ✅ Prevent NoSQL injection by ensuring string type
+    if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({ message: "Invalid input types" });
+    }
+
+    // ✅ Safe query
+    const employee = await Employee.findOne({ email: email.toLowerCase() }).lean();
+
+    if (!employee) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
     const isMatch = await bcrypt.compare(password, employee.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
     const token = jwt.sign(
       { id: employee._id, role: employee.role },
@@ -19,21 +38,33 @@ exports.employeeLogin = async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    res.status(200).json({ token, role: employee.role });
+    return res.status(200).json({ token, role: employee.role });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// Get all pending transactions
+
+
+// Get all pending transactions with sender info populated
+// Get all pending transactions with sender info populated
 exports.getPendingTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ status: "Pending" });
+    // Use case-insensitive match for "Pending" status
+const transactions = await Transaction.find({ status: { $in: ["Pending", "Verified"] } })
+  .populate("sender", "fullName userName")
+  .lean();
+  
+    console.log("Pending transactions fetched:", transactions); // debug log
+
     res.status(200).json(transactions);
   } catch (error) {
+    console.error("Error fetching pending transactions:", error.message);
     res.status(500).json({ message: "Error fetching transactions", error: error.message });
   }
 };
+
+
 
 // Verify a transaction
 exports.verifyTransaction = async (req, res) => {

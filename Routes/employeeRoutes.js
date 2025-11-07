@@ -5,13 +5,13 @@ const {
   verifyTransaction,
   submitToSwift,
 } = require("../Controllers/employeeController");
-const authMiddleware = require("../Middleware/authMiddleware");
+const { protect } = require("../Middleware/authMiddleware");
 
 const router = express.Router();
 
 router.post("/login", employeeLogin);
-router.get("/transactions", authMiddleware, getPendingTransactions);
-router.put("/verify/:id", authMiddleware, verifyTransaction);
-router.put("/submit/:id", authMiddleware, submitToSwift);
+router.get("/transactions", protect, getPendingTransactions);
+router.put("/verify/:id", protect, verifyTransaction);
+router.put("/submit/:id", protect, submitToSwift);
 
 module.exports = router;
