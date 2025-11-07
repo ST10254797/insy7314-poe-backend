@@ -1,9 +1,16 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 
-const authController = require('../Controllers/authController'); // ✅ Add this line
-const protect = require('../Middleware/authMiddleware');
-const { registerUser, loginUser } = require('../Controllers/authController');
+const {
+  registerUser,
+  loginUser,
+  initiateEnableMFA,
+  verifyEnableMFA,
+  refreshToken,
+  logout
+} = require('../Controllers/authController');
+
+const { protect, authorize } = require('../Middleware/authMiddleware');
 const validateInput = require('../Middleware/validateInput');
 const rateLimiter = require('../Middleware/rateLimiter');
 
@@ -11,13 +18,15 @@ const router = express.Router();
 
 router.use(cookieParser());
 
+console.log('initiateEnableMFA type:', typeof initiateEnableMFA);
+console.log('protect type:', typeof protect);
+
 router.post('/register', validateInput, registerUser);
 router.post('/login', rateLimiter, loginUser);
 
-router.post('/mfa/initiate', protect, authController.initiateEnableMFA);
-router.post('/mfa/verify', protect, authController.verifyEnableMFA);
-
-router.post('/refresh', authController.refreshToken); // refresh uses cookie
-router.post('/logout', authController.logout);
+router.post('/enable-mfa/initiate', protect, initiateEnableMFA);
+router.post('/enable-mfa/verify', protect, verifyEnableMFA);
+router.post('/refresh', refreshToken);
+router.post('/logout', logout);
 
 module.exports = router;
